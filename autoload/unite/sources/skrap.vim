@@ -46,6 +46,16 @@ let s:source.source__skrap_gather_candidates = s:source.gather_candidates
 
 function! s:source.gather_candidates(args, context)
 	let year_month = get(a:args, 0, strftime('%Y/%m'))
+
+	" Remove trailing slash
+	let year_month = substitute(year_month, '/$', '', '')
+	" Remove directory string because the argument contains g:skrap_directory
+	" when redrawing
+	let length = strlen(year_month)
+	if length > 7
+		let year_month = strpart(year_month, length - 7)
+	endif
+
 	let dir = g:skrap_directory . '/' . year_month
 	if len(a:args)
 		let a:args[0] = dir
