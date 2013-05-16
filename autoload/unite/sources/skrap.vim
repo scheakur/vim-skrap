@@ -75,6 +75,8 @@ function! s:source.complete(args, context, arglead, cmdline, cursorpos)
 	return dirs
 endfunction
 
+" TODO This may not be right way to set sorters.
+call unite#custom_source('skrap', 'sorters', ['sorter_word', 'sorter_reverse'])
 
 " restore 'cpoptions' {{{
 let &cpo = s:save_cpo
