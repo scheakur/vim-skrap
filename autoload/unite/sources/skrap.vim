@@ -49,6 +49,12 @@ function! s:source.gather_candidates(args, context)
 
 	" Remove trailing slash
 	let year_month = substitute(year_month, '/$', '', '')
+
+	if year_month =~# '^p\%[revious]$'
+		let [y, m] = split(strftime('%Y,%m'), ',')
+		let year_month = join(s:get_prev_year_month(y, m), '/')
+	endif
+
 	" Remove directory string because the argument contains g:skrap_directory
 	" when redrawing
 	let length = strlen(year_month)
@@ -66,12 +72,23 @@ function! s:source.gather_candidates(args, context)
 endfunction
 
 
+function! s:get_prev_year_month(y, m)
+	let y = str2nr(a:y, 10)
+	let m = str2nr(a:m, 10)
+	if m > 1
+		return [string(y), ('0' . (m - 1))[-2:]]
+	endif
+	return [string(y - 1), '12']
+endfunction
+
+
 function! s:source.complete(args, context, arglead, cmdline, cursorpos)
 	let base_dir = g:skrap_directory . '/'
 	let arglead = base_dir . a:arglead
 	let dirs = unite#sources#file#complete_directory(
 	\		a:args, a:context, arglead, a:cmdline, a:cursorpos)
 	let dirs = map(dirs, 'substitute(v:val, base_dir, "", "") . "/"')
+	call add(dirs, 'previous')
 	return dirs
 endfunction
 
